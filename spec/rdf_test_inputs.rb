@@ -22,4 +22,8 @@ module RdfTestInputs
   @base <http://test/base1/> .
   base_doc
 
+  input[:n3] = <<-n3_doc
+  <http://test/node1> <http://test/node2> <http://test/node3> .
+  n3_doc
+
 end

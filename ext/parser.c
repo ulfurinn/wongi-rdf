@@ -58,8 +58,8 @@ int fill_parser_complect( pParserComplect complect, pANTLR3_UINT8 file ) {
         fprintf( stderr, "failed to alloc lexer\n" );
         return 0;
     }
-    complect->tokens = antlr3CommonTokenStreamSourceNew( ANTLR3_SIZE_HINT,
-            TOKENSOURCE(complect->lexer) );
+    complect->tokens = antlr3CommonTokenStreamSourceNew (ANTLR3_SIZE_HINT,
+        TOKENSOURCE(complect->lexer));
 
     complect->parser = TurtleParserNew( complect->tokens );
     return 1;
@@ -109,32 +109,32 @@ VALUE turtle_parser_parse_file( int argc, VALUE * argv, VALUE self ) {
     pANTLR3_UINT8 file;
     int alloc;
 
-	if ( argc == 0 || ( argc > 0 && NIL_P(argv[0]) ) ) {
+    if ( argc == 0 || ( argc > 0 && NIL_P(argv[0]) ) ) {
         rb_raise( rb_eArgError, "file name required" );
     }
     source_file = argv[ 0 ];
 
-	if( argc > 1 )
-		working_document = argv[ 1 ];
+    if( argc > 1 )
+      working_document = argv[ 1 ];
 
-	if ( NIL_P(working_document) ) {
-        working_document = rb_class_new_instance( 0, NULL, rb_path2class( "Wongi::RDF::Document" ) );
-    }
+  if ( NIL_P(working_document) ) {
+    working_document = rb_class_new_instance( 0, NULL, rb_path2class( "Wongi::RDF::Document" ) );
+}
 
-    Data_Get_Struct( self, ParserComplect, complect );
-    file = (pANTLR3_UINT8) StringValueCStr( source_file );
-    alloc = fill_parser_complect( complect, file );
+Data_Get_Struct( self, ParserComplect, complect );
+file = (pANTLR3_UINT8) StringValueCStr( source_file );
+alloc = fill_parser_complect( complect, file );
 
-    if ( alloc ) {
-        VALUE argv[ ] = { working_document };
-        VALUE collector = rb_class_new_instance( 1, argv, cCollector );
-        complect->parser->document( complect->parser, collector );
-    }
+if ( alloc ) {
+    VALUE argv[ ] = { working_document };
+    VALUE collector = rb_class_new_instance( 1, argv, cCollector );
+    complect->parser->document( complect->parser, collector );
+}
 
-    release_complect( complect );
+release_complect( complect );
 
 
-	return working_document;
+return working_document;
 }
 
 void define_parser() {
