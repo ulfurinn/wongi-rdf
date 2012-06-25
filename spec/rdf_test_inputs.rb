@@ -26,4 +26,9 @@ module RdfTestInputs
   <http://test/node1> <http://test/node2> <http://test/node3> .
   n3_doc
 
+  input[:qnames] = <<-qnames_doc
+  @prefix test: <http://test/> .
+  test:node1 test:node2 test:node3 .
+  qnames_doc
+
 end

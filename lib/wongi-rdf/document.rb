@@ -32,6 +32,10 @@ module Wongi
         Resource.new real_uri, self
       end
 
+      def lookup prefix
+        namespaces[prefix]
+      end
+
       def << statement
         statements << statement
       end

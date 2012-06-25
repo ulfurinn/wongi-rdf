@@ -81,7 +81,32 @@ object[VALUE collector] returns [VALUE node]
 resource[ VALUE collector ] returns [VALUE node]
 	@init{ VALUE rbDocument = COLLECTOR_DOCUMENT; $node = Qnil; }
 	:
-	uri[collector] { $node = rb_funcall( rbDocument, rb_intern("resource"), 1, $uri.ruby_uri ); }
+	qname[collector] { $node = rb_funcall( rbDocument, rb_intern("resource"), 1, $qname.ruby_uri ); }
+	| uri[collector] { $node = rb_funcall( rbDocument, rb_intern("resource"), 1, $uri.ruby_uri ); }
+	;
+
+qname[VALUE collector] returns [VALUE ruby_uri]
+	@init { $ruby_uri = Qnil; }
+	:
+	prefix=IDENT ':' local=IDENT
+	{
+		VALUE rbDocument = COLLECTOR_DOCUMENT;
+		VALUE prefixURI = rb_funcall( rbDocument, rb_intern("lookup"), 1, rb_str_new2( $prefix.text->chars ) );
+	    VALUE localStr = rb_str_new2( $local.text->chars );
+	    
+	    //  Ruby URI replaces the whole last segment when it ends with a #
+	    //  but this screws up the entire namespacing.
+	    //  To avoid this, we prepend # to the local part.
+	    if( prefixURI == Qnil ) {
+	        rb_raise( rb_eException, "Unknown prefix \%s", $prefix.text->chars );
+	    }
+	    VALUE hash_fragment = rb_funcall( prefixURI, rb_intern("fragment"), 0 );
+	    if( hash_fragment != Qnil ) {
+	      localStr = rb_funcall( rb_str_new2("#"), rb_intern("+"), 1, localStr );
+	    } 
+	    
+	    $ruby_uri = rb_funcall( prefixURI, rb_intern("+"), 1, localStr );
+	}
 	;
 
 uri[VALUE collector] returns [VALUE ruby_uri]

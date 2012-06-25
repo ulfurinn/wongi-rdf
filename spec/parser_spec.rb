@@ -67,4 +67,14 @@ describe "the RDF parser" do
     statement.object.uri.to_s.should == "http://test/node3"
   end
 
+  it 'should parse simple statements with qnames' do
+    test_document :qnames
+    @document.statements.should have(1).item
+
+    statement = @document.statements.first
+    statement.subject.uri.to_s.should == "http://test/node1"
+    statement.predicate.uri.to_s.should == "http://test/node2"
+    statement.object.uri.to_s.should == "http://test/node3"
+  end
+
 end
