@@ -4,7 +4,7 @@ module Wongi
 
       attr_reader :statements
       attr_reader :namespaces
-      attr_accessor :base
+      attr_reader :base
 
       def initialize
         @statements = []
@@ -13,6 +13,13 @@ module Wongi
 
       def empty?
         statements.empty? && namespaces.empty?
+      end
+
+      def base= b
+        unless base.nil? || base == b
+          raise BaseException.new( "Cannot replace document base #{base} with #{b}" )
+        end
+        @base = b
       end
 
     end 

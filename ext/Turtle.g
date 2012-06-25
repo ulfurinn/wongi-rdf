@@ -48,13 +48,7 @@ base_declaration[VALUE collector]
 	'@base' uri[collector]
 	{
 		VALUE rbDocument = COLLECTOR_DOCUMENT;
-		VALUE existing_base = rb_funcall( rbDocument, rb_intern("base"), 0 );
-		if( RTEST(existing_base) ) {
-			rb_raise( eBase, "A base has already been specified" );
-		}
-		else {
-			rb_funcall( rbDocument, rb_intern("base="), 1, $uri.ruby_uri );
-		}
+		rb_funcall( rbDocument, rb_intern("base="), 1, $uri.ruby_uri );
 	}
 	;
 

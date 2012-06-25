@@ -30,11 +30,30 @@ describe "the RDF parser" do
     @document.namespaces["ns"].to_s.should == "http://test/ns/"
   end
 
+  it 'should parse prefixes into an existing document' do
+    document = Wongi::RDF::Document.new
+    document.should be_empty
+    test_document :prefixes, document
+    @document.should == document
+    @document.namespaces.should have(1).item
+    @document.namespaces.should have_key("ns")
+    @document.namespaces["ns"].should be_a_kind_of( URI )
+    @document.namespaces["ns"].to_s.should == "http://test/ns/"
+  end
+
   it 'should parse document base' do
     test_document :base
     @document.should be_empty
     @document.base.should be_a_kind_of( URI )
     @document.base.to_s.should == "http://test/base/"
+  end
+
+  it 'should not replace a document\'s base' do
+    document = Wongi::RDF::Document.new
+    document.base = URI.parse( 'http://test/base/' )
+    lambda { test_document :base, document }.should_not raise_error( Wongi::RDF::BaseException )
+    lambda { test_document :base1, document }.should raise_error( Wongi::RDF::BaseException )
+
   end
 
 end

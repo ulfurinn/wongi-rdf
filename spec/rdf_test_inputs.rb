@@ -18,4 +18,8 @@ module RdfTestInputs
   @base <http://test/base/> .
   base_doc
 
+  input[:base1] = <<-base_doc
+  @base <http://test/base1/> .
+  base_doc
+
 end

@@ -9,17 +9,17 @@ module RdfTestHelper
     end
   end
 
-  def parse_test_file
-    @document = @parser.parse_file file("tmp")
+  def parse_test_file document = nil
+    @document = @parser.parse_file file("tmp"), document
   end
 
-  def test_document document
-    string = input(document)
+  def test_document test_case, document = nil
+    string = input(test_case)
     if string.nil?
       raise "Document '#{document}' is not defined"
     end
     make_test_file string
-    parse_test_file
+    parse_test_file document
   end
 
 
