@@ -2,6 +2,10 @@ require "wongi-rdf/version"
 
 module Wongi
   module RDF
-    # Your code goes here...
+    
+    def self.debug v
+      puts "Debug: #{v}"
+    end
+
   end
 end

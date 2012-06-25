@@ -3,13 +3,13 @@
  *
  *     -  From the grammar source file : Turtle.g
  *     -                            On : 2012-06-25 14:38:54
- *     -                for the parser : TurtleParserParser *
+ *     -                 for the lexer : TurtleLexerLexer *
  * Editing it, at least manually, is not wise. 
  *
  * C language generator and runtime by Jim Idle, jimi|hereisanat|idle|dotgoeshere|ws.
  *
  *
- * The parser TurtleParser has the callable functions (rules) shown below,
+ * The lexer TurtleLexer has the callable functions (rules) shown below,
  * which will invoke the code for the associated rule in the source grammar
  * assuming that the input stream is pointing to a token/text stream that could begin
  * this rule.
@@ -20,15 +20,19 @@
  * in editors and so on.
  *
  * The parser entry points are called indirectly (by function pointer to function) via
- * a parser context typedef pTurtleParser, which is returned from a call to TurtleParserNew().
+ * a parser context typedef pTurtleLexer, which is returned from a call to TurtleLexerNew().
  *
- * The methods in pTurtleParser are  as follows:
+ * As this is a generated lexer, it is unlikely you will call it 'manually'. However
+ * the methods are provided anyway.
+ * * The methods in pTurtleLexer are  as follows:
  *
- *  - TurtleParser_document_return      pTurtleParser->document(pTurtleParser)
- *  - TurtleParser_statement_return      pTurtleParser->statement(pTurtleParser)
- *  - TurtleParser_directive_return      pTurtleParser->directive(pTurtleParser)
- *  - TurtleParser_namespace_declaration_return      pTurtleParser->namespace_declaration(pTurtleParser)
- *  - TurtleParser_uri_return      pTurtleParser->uri(pTurtleParser)
+ *  -  void      pTurtleLexer->T__9(pTurtleLexer)
+ *  -  void      pTurtleLexer->URI(pTurtleLexer)
+ *  -  void      pTurtleLexer->AT_PREFIX(pTurtleLexer)
+ *  -  void      pTurtleLexer->DOT(pTurtleLexer)
+ *  -  void      pTurtleLexer->IDENT(pTurtleLexer)
+ *  -  void      pTurtleLexer->WS(pTurtleLexer)
+ *  -  void      pTurtleLexer->Tokens(pTurtleLexer)
  *
  * The return type for any particular rule is of course determined by the source
  * grammar file.
@@ -62,8 +66,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef	_TurtleParser_H
-#define _TurtleParser_H
+#ifndef	_TurtleLexer_H
+#define _TurtleLexer_H
 /* =============================================================================
  * Standard antlr3 C runtime definitions
  */
@@ -82,17 +86,11 @@ extern "C" {
 // interdependent and their context structures contain pointers to each other
 // C only allows such things to be declared if you pre-declare the typedef.
 //
-typedef struct TurtleParser_Ctx_struct TurtleParser, * pTurtleParser;
-
+typedef struct TurtleLexer_Ctx_struct TurtleLexer, * pTurtleLexer;
 
 
 
 	#include <ruby.h>
-	#include "extern.h"
-
-	#define COLLECTOR_DOCUMENT rb_funcall( collector, rb_intern("document"), 0 )
-	#define MATCH(string) printf("matched " string "\n");
-
 
 
 #ifdef	ANTLR3_WINDOWS
@@ -115,95 +113,35 @@ typedef struct TurtleParser_Ctx_struct TurtleParser, * pTurtleParser;
 #pragma warning( disable : 4505 )
 #pragma warning( disable : 4701 )
 #endif
-typedef struct TurtleParser_document_return_struct
-{
-    /** Generic return elements for ANTLR3 rules that are not in tree parsers or returning trees
-     */
-    pANTLR3_COMMON_TOKEN    start;
-    pANTLR3_COMMON_TOKEN    stop;
-    pANTLR3_BASE_TREE	tree;
-   
-}
-    TurtleParser_document_return;
 
-typedef struct TurtleParser_statement_return_struct
-{
-    /** Generic return elements for ANTLR3 rules that are not in tree parsers or returning trees
-     */
-    pANTLR3_COMMON_TOKEN    start;
-    pANTLR3_COMMON_TOKEN    stop;
-    pANTLR3_BASE_TREE	tree;
-   
-}
-    TurtleParser_statement_return;
-
-typedef struct TurtleParser_directive_return_struct
-{
-    /** Generic return elements for ANTLR3 rules that are not in tree parsers or returning trees
-     */
-    pANTLR3_COMMON_TOKEN    start;
-    pANTLR3_COMMON_TOKEN    stop;
-    pANTLR3_BASE_TREE	tree;
-   
-}
-    TurtleParser_directive_return;
-
-typedef struct TurtleParser_namespace_declaration_return_struct
-{
-    /** Generic return elements for ANTLR3 rules that are not in tree parsers or returning trees
-     */
-    pANTLR3_COMMON_TOKEN    start;
-    pANTLR3_COMMON_TOKEN    stop;
-    pANTLR3_BASE_TREE	tree;
-   
-}
-    TurtleParser_namespace_declaration_return;
-
-typedef struct TurtleParser_uri_return_struct
-{
-    /** Generic return elements for ANTLR3 rules that are not in tree parsers or returning trees
-     */
-    pANTLR3_COMMON_TOKEN    start;
-    pANTLR3_COMMON_TOKEN    stop;
-    pANTLR3_BASE_TREE	tree;
-   
-    VALUE ruby_uri;
-}
-    TurtleParser_uri_return;
-
-
-
-/** Context tracking structure for TurtleParser
+/** Context tracking structure for TurtleLexer
  */
-struct TurtleParser_Ctx_struct
+struct TurtleLexer_Ctx_struct
 {
     /** Built in ANTLR3 context tracker contains all the generic elements
      *  required for context tracking.
      */
-    pANTLR3_PARSER   pParser;
+    pANTLR3_LEXER    pLexer;
 
 
-     TurtleParser_document_return (*document)	(struct TurtleParser_Ctx_struct * ctx, VALUE collector);
-     TurtleParser_statement_return (*statement)	(struct TurtleParser_Ctx_struct * ctx, VALUE collector);
-     TurtleParser_directive_return (*directive)	(struct TurtleParser_Ctx_struct * ctx, VALUE collector);
-     TurtleParser_namespace_declaration_return (*namespace_declaration)	(struct TurtleParser_Ctx_struct * ctx, VALUE collector);
-     TurtleParser_uri_return (*uri)	(struct TurtleParser_Ctx_struct * ctx, VALUE collector);
-    // Delegated rules
-    const char * (*getGrammarFileName)();
-    void	    (*free)   (struct TurtleParser_Ctx_struct * ctx);
-    /* @headerFile.members() */
-    pANTLR3_BASE_TREE_ADAPTOR	adaptor;
-    pANTLR3_VECTOR_FACTORY		vectors;
-    /* End @headerFile.members() */
+     void (*mT__9)	(struct TurtleLexer_Ctx_struct * ctx);
+     void (*mURI)	(struct TurtleLexer_Ctx_struct * ctx);
+     void (*mAT_PREFIX)	(struct TurtleLexer_Ctx_struct * ctx);
+     void (*mDOT)	(struct TurtleLexer_Ctx_struct * ctx);
+     void (*mIDENT)	(struct TurtleLexer_Ctx_struct * ctx);
+     void (*mWS)	(struct TurtleLexer_Ctx_struct * ctx);
+     void (*mTokens)	(struct TurtleLexer_Ctx_struct * ctx);    const char * (*getGrammarFileName)();
+    void	    (*free)   (struct TurtleLexer_Ctx_struct * ctx);
+        
 };
 
 // Function protoypes for the constructor functions that external translation units
 // such as delegators and delegates may wish to call.
 //
-ANTLR3_API pTurtleParser TurtleParserNew         (pANTLR3_COMMON_TOKEN_STREAM instream);
-ANTLR3_API pTurtleParser TurtleParserNewSSD      (pANTLR3_COMMON_TOKEN_STREAM instream, pANTLR3_RECOGNIZER_SHARED_STATE state);
+ANTLR3_API pTurtleLexer TurtleLexerNew         (pANTLR3_INPUT_STREAM instream);
+ANTLR3_API pTurtleLexer TurtleLexerNewSSD      (pANTLR3_INPUT_STREAM instream, pANTLR3_RECOGNIZER_SHARED_STATE state);
 
-/** Symbolic definitions of all the tokens that the parser will work with.
+/** Symbolic definitions of all the tokens that the lexer will work with.
  * \{
  *
  * Antlr will define EOF, but we can't use that as it it is too common in
@@ -233,7 +171,7 @@ ANTLR3_API pTurtleParser TurtleParserNewSSD      (pANTLR3_COMMON_TOKEN_STREAM in
 #define TOKENSOURCE(lxr) lxr->pLexer->rec->state->tokSource
 #endif
 
-/* End of token definitions for TurtleParser
+/* End of token definitions for TurtleLexer
  * =============================================================================
  */
 /** \} */

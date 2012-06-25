@@ -15,6 +15,7 @@ ext/mkmf.log
 lib/bundler/man
 pkg
 rdoc
+spec/input/tmp.n3
 spec/reports
 test/tmp
 test/version_tmp
