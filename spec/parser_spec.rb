@@ -19,6 +19,7 @@ describe "the RDF parser" do
     test_document :empty
     @document.should be_a_kind_of( Wongi::RDF::Document )
     @document.should be_empty
+    @document.base.should be_nil
   end
 
   it 'should parse prefixes' do
@@ -27,6 +28,13 @@ describe "the RDF parser" do
     @document.namespaces.should have_key("ns")
     @document.namespaces["ns"].should be_a_kind_of( URI )
     @document.namespaces["ns"].to_s.should == "http://test/ns/"
+  end
+
+  it 'should parse document base' do
+    test_document :base
+    @document.should be_empty
+    @document.base.should be_a_kind_of( URI )
+    @document.base.to_s.should == "http://test/base/"
   end
 
 end

@@ -21,28 +21,13 @@ options {
 	#include <ruby.h>
 }
 
-document[VALUE collector]
-	:
-	statement[collector]*
-	{
-		MATCH("document");
-	}
-	;
+document[VALUE collector] : statement[collector] * ;
 
-statement[VALUE collector]
-	:
-	directive[collector] DOT
-	{
-		MATCH("statement");
-	}
-	;
+statement[VALUE collector] : directive[collector] DOT ;
 
 directive[VALUE collector]
-	:
-	namespace_declaration[collector]
-	{
-		MATCH("namespace_declaration");
-	}
+	: namespace_declaration[collector]
+	| base_declaration[collector]
 	;
 
 namespace_declaration[VALUE collector]
@@ -55,6 +40,21 @@ namespace_declaration[VALUE collector]
 		VALUE document = COLLECTOR_DOCUMENT;
 		VALUE rbNamespaces = rb_funcall( document, rb_intern("namespaces"), 0 );
 		rb_hash_aset( rbNamespaces, rbPrefix, rbFull );
+	}
+	;
+
+base_declaration[VALUE collector]
+	:
+	'@base' uri[collector]
+	{
+		VALUE rbDocument = COLLECTOR_DOCUMENT;
+		VALUE existing_base = rb_funcall( rbDocument, rb_intern("base"), 0 );
+		if( RTEST(existing_base) ) {
+			rb_raise( eBase, "A base has already been specified" );
+		}
+		else {
+			rb_funcall( rbDocument, rb_intern("base="), 1, $uri.ruby_uri );
+		}
 	}
 	;
 

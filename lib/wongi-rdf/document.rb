@@ -4,7 +4,7 @@ module Wongi
 
       attr_reader :statements
       attr_reader :namespaces
-      attr_reader :base
+      attr_accessor :base
 
       def initialize
         @statements = []
@@ -14,6 +14,7 @@ module Wongi
       def empty?
         statements.empty? && namespaces.empty?
       end
+
     end 
   end
 end

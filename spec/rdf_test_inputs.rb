@@ -10,8 +10,12 @@ module RdfTestInputs
 
   input[:empty] = ""
 
-  input[:prefixes] = <<-prefixes
+  input[:prefixes] = <<-prefixes_doc
   @prefix ns: <http://test/ns/> .
-  prefixes
+  prefixes_doc
+
+  input[:base] = <<-base_doc
+  @base <http://test/base/> .
+  base_doc
 
 end
