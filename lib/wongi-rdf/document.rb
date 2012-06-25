@@ -27,6 +27,12 @@ module Wongi
           uri
         elsif uri.respond_to? :to_uri
           uri.to_uri
+        else
+          begin
+            URI.parse uri
+          rescue
+            nil
+          end
         end
         raise "Cannot create an RDF resource from #{uri}" unless real_uri
         Resource.new real_uri, self

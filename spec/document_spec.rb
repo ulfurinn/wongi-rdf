@@ -24,7 +24,13 @@ describe Wongi::RDF::Document do
     resource.should be_a_kind_of( Wongi::RDF::Resource )
   end
 
+  it 'should create a resource from a parseable string' do
+    resource = subject.resource 'http://test/resource'
+    resource.should be_a_kind_of( Wongi::RDF::Resource )
+  end
+
   it 'should not create a resource from bad arguments' do
+    lambda { subject.resource "something something" }.should raise_error
     lambda { subject.resource 42 }.should raise_error
   end
 
