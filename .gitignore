@@ -8,6 +8,10 @@ InstalledFiles
 _yardoc
 coverage
 doc/
+ext/Makefile
+ext/*.o
+ext/*.so
+ext/mkmf.log
 lib/bundler/man
 pkg
 rdoc
@@ -15,3 +19,4 @@ spec/reports
 test/tmp
 test/version_tmp
 tmp
+Turtle.tokens
