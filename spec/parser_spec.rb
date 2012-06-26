@@ -77,4 +77,29 @@ describe "the RDF parser" do
     statement.object.uri.to_s.should == "http://test/node3"
   end
 
+  it 'should parse the rdf:type shorthand' do
+    test_document :a
+    @document.statements.should include( Wongi::RDF::Statement.new "test:node1", "rdf:type", "test:node2", @document )
+  end
+
+  it 'should parse object lists' do
+    test_document :object_list
+    @document.statements.should have(3).items
+    @document.statements.should include( Wongi::RDF::Statement.new "test:node1", "test:node2", "test:node31", @document )
+    @document.statements.should include( Wongi::RDF::Statement.new "test:node1", "test:node2", "test:node32", @document )
+    @document.statements.should include( Wongi::RDF::Statement.new "test:node1", "test:node2", "test:node33", @document )
+  end
+
+  it 'should parse predicate lists'
+
+  it 'should parse collections'
+
+  it 'should parse blank nodes'
+
+  it 'should parse shortcut objects'
+
+  it 'should remap namespaces from another document'
+
+  it 'should remap blanks from another document'
+
 end

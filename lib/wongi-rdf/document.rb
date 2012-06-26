@@ -27,6 +27,12 @@ module Wongi
           uri
         elsif uri.respond_to? :to_uri
           uri.to_uri
+        elsif parsed = Resource.parse_qname( uri ) and parsed.length == 2
+          ns = lookup parsed[0]
+          unless ns
+            raise "Unknown prefix #{parsed[0]} while expanding qname #{uri}"
+          end
+          ns + parsed[1]
         else
           begin
             URI.parse uri
@@ -36,6 +42,10 @@ module Wongi
         end
         raise "Cannot create an RDF resource from #{uri}" unless real_uri
         Resource.new real_uri, self
+      end
+
+      def register prefix, full
+        namespaces[prefix] = full
       end
 
       def lookup prefix

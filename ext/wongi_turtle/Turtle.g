@@ -15,6 +15,9 @@ options {
 	#define COLLECTOR_DOCUMENT rb_funcall( collector, rb_intern("document"), 0 )
 	#define MATCH(string) printf("matched " string "\n");
 
+	#define RDF_NS "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	#define RDF_TYPE RDF_NS "type"
+
 }
 
 @lexer::header {
@@ -54,18 +57,39 @@ base_declaration[VALUE collector]
 
 triples[VALUE collector]
 	:
-	subject[collector] predicate[collector] object[collector]
-	{
-		VALUE argv[] = { $subject.node, $predicate.node, $object.node };
-	    VALUE statement = rb_class_new_instance( 3, argv, rb_path2class("Wongi::RDF::Statement") );
-	    VALUE rbDocument = COLLECTOR_DOCUMENT;
-	    rb_funcall( rbDocument, rb_intern("<<"), 1, statement );
+	subject[collector] verb[collector] object_list[collector, $subject.node, $verb.node]
+	;
+
+object_list[VALUE collector, VALUE subject, VALUE predicate]
+	@init { VALUE rbDocument = COLLECTOR_DOCUMENT; }
+	:
+	first=object[collector] {
+		VALUE argv[] = { $subject, $predicate, $first.node };
+		VALUE statement = rb_class_new_instance( 3, argv, rb_path2class("Wongi::RDF::Statement") );
+		rb_funcall( rbDocument, rb_intern("<<"), 1, statement );
 	}
+	(',' subseq=object[collector] {
+		VALUE argv[] = { $subject, $predicate, $subseq.node };
+		VALUE statement = rb_class_new_instance( 3, argv, rb_path2class("Wongi::RDF::Statement") );
+		rb_funcall( rbDocument, rb_intern("<<"), 1, statement );
+	} )*
 	;
 
 subject[VALUE collector] returns [VALUE node]
 	:
 	resource[collector] { $node = $resource.node; }
+	;
+
+verb[VALUE collector] returns [VALUE node]
+	@init { $node = Qnil; }
+	:
+	predicate[collector] { $node = $predicate.node; }
+	|
+	'a' {
+		VALUE rbDocument = COLLECTOR_DOCUMENT;
+		rb_funcall( rbDocument, rb_intern("register"), 2, rb_str_new2("rdf"), rb_str_new2(RDF_NS) );
+		$node = rb_funcall( rbDocument, rb_intern("resource"), 1, rb_str_new2(RDF_TYPE) );
+	}
 	;
 
 predicate[VALUE collector] returns [VALUE node]

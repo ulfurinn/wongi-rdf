@@ -31,4 +31,14 @@ module RdfTestInputs
   test:node1 test:node2 test:node3 .
   qnames_doc
 
+  input[:a] = <<-a_doc
+  @prefix test: <http://test/> .
+  test:node1 a test:node2 .
+  a_doc
+
+  input[:object_list] = <<-object_list_doc
+  @prefix test: <http://test/> .
+  test:node1 test:node2 test:node31, test:node32, test:node33 .
+  object_list_doc
+
 end

@@ -16,7 +16,7 @@ module RdfTestHelper
   def test_document test_case, document = nil
     string = input(test_case)
     if string.nil?
-      raise "Document '#{document}' is not defined"
+      raise "Document '#{test_case}' is not defined"
     end
     make_test_file string
     parse_test_file document

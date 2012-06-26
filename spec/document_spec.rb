@@ -34,4 +34,11 @@ describe Wongi::RDF::Document do
     lambda { subject.resource 42 }.should raise_error
   end
 
+  it 'should expand qnames' do
+    subject.register "test", URI.parse( 'http://test/' )
+    resource = subject.resource "test:node1"
+    resource.should be_a_kind_of( Wongi::RDF::Resource )
+    resource.uri.to_s.should == 'http://test/node1'
+  end
+
 end
