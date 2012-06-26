@@ -5,7 +5,7 @@ module Wongi
       attr_reader :document
 
       def initialize s, p, o, document = nil
-        super( ensure_resource(s, document), ensure_resource(p, document), ensure_resource(o, document) )
+        super( ensure_node(s, document), ensure_node(p, document), ensure_node(o, document) )
       end
 
       def == other
@@ -18,8 +18,8 @@ module Wongi
 
       private
 
-      def ensure_resource r, document
-        if r.kind_of? Resource
+      def ensure_node r, document
+        if r.kind_of? Node
           r
         elsif document
           document.resource r

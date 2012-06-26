@@ -51,4 +51,9 @@ module RdfTestInputs
   test:node1 test:node21 test:node31 ; test:node22 test:node321, test:node322 .
   object_and_predicate_list_doc
 
+  input[:blanks] = <<-blanks_doc
+  @prefix test: <http://test/> .
+  test:node1 test:node2 _:blank1 .
+  blanks_doc
+
 end

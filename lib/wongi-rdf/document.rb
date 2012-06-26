@@ -7,8 +7,10 @@ module Wongi
       attr_reader :base
 
       def initialize
-        @statements = []
-        @namespaces = {} 
+        @statements = [ ]
+        @namespaces = { } 
+        @blank_counter = 1
+        @used_blanks = { }
       end
 
       def empty?
@@ -44,6 +46,16 @@ module Wongi
         Resource.new real_uri, self
       end
 
+      def blank id = nil
+        if id.nil? 
+          while has_blank? "blank#{@blank_counter}"
+            @blank_counter += 1
+          end
+          id = "blank#{@blank_counter}"
+        end
+        Blank.new id, self
+      end
+
       def register prefix, full
         namespaces[prefix] = full
       end
@@ -53,7 +65,17 @@ module Wongi
       end
 
       def << statement
+        [:subject, :predicate, :object].each do |node_name|
+          node = statement.send node_name
+          if node.kind_of? Blank
+            @used_blanks[node.id] = true
+          end
+        end
         statements << statement
+      end
+
+      def has_blank? id
+        @used_blanks[id]
       end
 
     end 

@@ -1,6 +1,8 @@
-require 'wongi-rdf/document'
-require 'wongi-rdf/statement'
+require 'wongi-rdf/node'
+require 'wongi-rdf/blank'
 require 'wongi-rdf/resource'
+require 'wongi-rdf/statement'
+require 'wongi-rdf/document'
 
 describe Wongi::RDF::Statement do
 

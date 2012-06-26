@@ -4,8 +4,11 @@ require 'rdf_test_inputs'
 
 require 'wongi-rdf/parser'
 require 'wongi-rdf/document'
+require 'wongi-rdf/node'
+require 'wongi-rdf/blank'
 require 'wongi-rdf/resource'
 require 'wongi-rdf/statement'
+require 'wongi-rdf/collector'
 require 'wongi_turtle'
 
 describe "the RDF parser" do
@@ -107,12 +110,36 @@ describe "the RDF parser" do
 
   it 'should parse collections'
 
-  it 'should parse blank nodes'
+  it 'should parse blank nodes' do
+    test_document :blanks
+    @document.statements.should have(1).item
+    statement = @document.statements.first
+    statement.subject.should == @document.resource( "test:node1" )
+    statement.predicate.should == @document.resource( "test:node2" )
+    statement.object.should == @document.blank( "blank1" )
+  end
 
-  it 'should parse shortcut objects'
+  it 'should parse shortcut blanks'
 
   it 'should remap namespaces from another document'
 
-  it 'should remap blanks from another document'
+  it 'should remap blanks from another document' do
+    document = Wongi::RDF::Document.new
+    test_document :blanks, document
+    test_document :blanks, document
+
+    @document.statements.should have(2).items
+
+    statement = @document.statements.first
+    statement.subject.should == @document.resource( "test:node1" )
+    statement.predicate.should == @document.resource( "test:node2" )
+    statement.object.should == @document.blank( "blank1" )
+
+    remapped_statement = @document.statements.last
+    remapped_statement.subject.should == @document.resource( "test:node1" )
+    remapped_statement.predicate.should == @document.resource( "test:node2" )
+    remapped_statement.object.should_not == @document.blank( "blank1" )
+
+  end
 
 end

@@ -110,6 +110,8 @@ predicate[VALUE collector] returns [VALUE node]
 object[VALUE collector] returns [VALUE node]
 	:
 	resource[collector] { $node = $resource.node; }
+	|
+	blank[collector] { $node =  $blank.node; }
 	;
 
 resource[ VALUE collector ] returns [VALUE node]
@@ -140,6 +142,15 @@ qname[VALUE collector] returns [VALUE ruby_uri]
 	    } 
 	    
 	    $ruby_uri = rb_funcall( prefixURI, rb_intern("+"), 1, localStr );
+	}
+	;
+
+blank[VALUE collector] returns [VALUE node]
+	@init { $node = Qnil; }
+	:
+	'_:' IDENT {
+		VALUE id = rb_str_new2( $IDENT.text->chars );
+		$node = rb_funcall( $collector, rb_intern("import_blank"), 1, id );
 	}
 	;
 

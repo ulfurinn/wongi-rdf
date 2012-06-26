@@ -117,24 +117,23 @@ VALUE turtle_parser_parse_file( int argc, VALUE * argv, VALUE self ) {
     if( argc > 1 )
       working_document = argv[ 1 ];
 
-  if ( NIL_P(working_document) ) {
-    working_document = rb_class_new_instance( 0, NULL, rb_path2class( "Wongi::RDF::Document" ) );
-}
+    if ( NIL_P(working_document) ) {
+        working_document = rb_class_new_instance( 0, NULL, rb_path2class( "Wongi::RDF::Document" ) );
+    }
 
-Data_Get_Struct( self, ParserComplect, complect );
-file = (pANTLR3_UINT8) StringValueCStr( source_file );
-alloc = fill_parser_complect( complect, file );
+    Data_Get_Struct( self, ParserComplect, complect );
+    file = (pANTLR3_UINT8) StringValueCStr( source_file );
+    alloc = fill_parser_complect( complect, file );
 
-if ( alloc ) {
-    VALUE argv[ ] = { working_document };
-    VALUE collector = rb_class_new_instance( 1, argv, cCollector );
-    complect->parser->document( complect->parser, collector );
-}
+    if ( alloc ) {
+        VALUE argv[ ] = { working_document };
+        VALUE collector = rb_class_new_instance( 1, argv, cCollector );
+        complect->parser->document( complect->parser, collector );
+    }
 
-release_complect( complect );
+    release_complect( complect );
 
-
-return working_document;
+    return working_document;
 }
 
 void define_parser() {

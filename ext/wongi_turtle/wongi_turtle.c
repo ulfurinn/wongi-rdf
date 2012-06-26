@@ -1,7 +1,6 @@
 #include <ruby.h>
 #include "extern.h"
 #include "parser.h"
-#include "collector.h"
 
 VALUE mWongi;
 VALUE mRDF;
@@ -24,7 +23,7 @@ void Init_wongi_turtle() {
 	define_prelude();
 
 	define_parser();
-	define_collector();
+	cCollector = rb_path2class("Wongi::RDF::Collector");
 
 	eBase = rb_define_class_under( mRDF, "BaseException", rb_eException );
 

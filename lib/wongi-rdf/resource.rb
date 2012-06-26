@@ -1,6 +1,6 @@
 module Wongi
   module RDF
-    class Resource
+    class Resource < Node
 
       attr_reader :uri, :document
 
@@ -20,7 +20,7 @@ module Wongi
 
       def == other
         # => comparing URIs directly doesn't work for some reason, investigate?..
-        uri.to_s == other.uri.to_s
+        super && uri.to_s == other.uri.to_s
       end
 
       def to_s
