@@ -41,4 +41,14 @@ module RdfTestInputs
   test:node1 test:node2 test:node31, test:node32, test:node33 .
   object_list_doc
 
+  input[:predicate_list] = <<-predicate_list_doc
+  @prefix test: <http://test/> .
+  test:node1 test:node21 test:node31 ; test:node22 test:node32 .
+  predicate_list_doc
+
+  input[:object_and_predicate_list] = <<-object_and_predicate_list_doc
+  @prefix test: <http://test/> .
+  test:node1 test:node21 test:node31 ; test:node22 test:node321, test:node322 .
+  object_and_predicate_list_doc
+
 end

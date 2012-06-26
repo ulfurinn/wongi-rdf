@@ -57,7 +57,17 @@ base_declaration[VALUE collector]
 
 triples[VALUE collector]
 	:
-	subject[collector] verb[collector] object_list[collector, $subject.node, $verb.node]
+	subject[collector] predicate_object_list[collector, $subject.node]
+	;
+
+predicate_object_list[VALUE collector, VALUE subject]
+	:
+	predicate_object_pair[collector, subject] ( ';' predicate_object_pair[collector, subject] )*
+	;
+
+predicate_object_pair[VALUE collector, VALUE subject]
+	:
+	verb[collector] object_list[collector, subject, $verb.node]
 	;
 
 object_list[VALUE collector, VALUE subject, VALUE predicate]

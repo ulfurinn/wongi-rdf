@@ -90,7 +90,20 @@ describe "the RDF parser" do
     @document.statements.should include( Wongi::RDF::Statement.new "test:node1", "test:node2", "test:node33", @document )
   end
 
-  it 'should parse predicate lists'
+  it 'should parse predicate lists' do
+    test_document :predicate_list
+    @document.statements.should have(2).items
+    @document.statements.should include( Wongi::RDF::Statement.new "test:node1", "test:node21", "test:node31", @document )
+    @document.statements.should include( Wongi::RDF::Statement.new "test:node1", "test:node22", "test:node32", @document )
+  end
+
+  it 'should parse mixed object and predicate lists' do
+    test_document :object_and_predicate_list
+    @document.statements.should have(3).items
+    @document.statements.should include( Wongi::RDF::Statement.new "test:node1", "test:node21", "test:node31", @document )
+    @document.statements.should include( Wongi::RDF::Statement.new "test:node1", "test:node22", "test:node321", @document )
+    @document.statements.should include( Wongi::RDF::Statement.new "test:node1", "test:node22", "test:node322", @document )
+  end
 
   it 'should parse collections'
 
