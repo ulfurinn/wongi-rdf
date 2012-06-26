@@ -8,11 +8,10 @@ InstalledFiles
 _yardoc
 coverage
 doc/
-ext/Makefile
-ext/*.o
-ext/*.so
-ext/mkmf.log
+ext/**/Makefile
+ext/**/mkmf.log
 lib/bundler/man
+lib/*.so
 pkg
 rdoc
 spec/input/tmp.n3

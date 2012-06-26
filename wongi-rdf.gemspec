@@ -12,7 +12,7 @@ Gem::Specification.new do |gem|
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.name          = "wongi-rdf"
-  gem.require_paths = ["lib", "ext"]
-  #gem.extensions    << "ext/extconf.rb"
+  gem.require_paths = ["lib"]
+  gem.extensions    << "ext/extconf.rb"
   gem.version       = Wongi::RDF::VERSION
 end
