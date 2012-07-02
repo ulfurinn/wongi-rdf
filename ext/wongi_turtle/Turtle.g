@@ -40,9 +40,7 @@ namespace_declaration[VALUE collector]
 		VALUE rbPrefix = rb_str_new2( $IDENT.text->chars );
 		VALUE rbFull = $uri.ruby_uri;
 
-		VALUE document = COLLECTOR_DOCUMENT;
-		VALUE rbNamespaces = rb_funcall( document, rb_intern("namespaces"), 0 );
-		rb_hash_aset( rbNamespaces, rbPrefix, rbFull );
+		rb_funcall( collector, rb_intern("register"), 2, rbPrefix, rbFull );
 	}
 	;
 
@@ -127,7 +125,7 @@ qname[VALUE collector] returns [VALUE ruby_uri]
 	prefix=IDENT ':' local=IDENT
 	{
 		VALUE rbDocument = COLLECTOR_DOCUMENT;
-		VALUE prefixURI = rb_funcall( rbDocument, rb_intern("lookup"), 1, rb_str_new2( $prefix.text->chars ) );
+		VALUE prefixURI = rb_funcall( collector, rb_intern("lookup"), 1, rb_str_new2( $prefix.text->chars ) );
 	    VALUE localStr = rb_str_new2( $local.text->chars );
 	    
 	    //  Ruby URI replaces the whole last segment when it ends with a #
@@ -152,6 +150,12 @@ blank[VALUE collector] returns [VALUE node]
 		VALUE id = rb_str_new2( $IDENT.text->chars );
 		$node = rb_funcall( $collector, rb_intern("import_blank"), 1, id );
 	}
+	|
+		{
+			VALUE rbDocument = COLLECTOR_DOCUMENT;
+			$blank.node = rb_funcall( rbDocument, rb_intern("blank"), 1, Qnil );
+		}
+		'[' predicate_object_list[ collector, $blank.node ]? ']'
 	;
 
 uri[VALUE collector] returns [VALUE ruby_uri]

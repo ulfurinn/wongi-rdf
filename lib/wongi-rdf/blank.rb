@@ -12,6 +12,10 @@ module Wongi
       def == other
         super && id == other.id
       end
+
+      def to_s
+        "_:#{id}"
+      end
       
     end
   end

@@ -10,6 +10,7 @@ module Wongi
         @statements = [ ]
         @namespaces = { } 
         @blank_counter = 1
+        @ns_counter = 0
         @used_blanks = { }
       end
 
@@ -56,8 +57,16 @@ module Wongi
         Blank.new id, self
       end
 
+      def new_ns
+        ns = "ns#{@ns_counter}"
+        @ns_counter += 1
+        ns
+      end
+
       def register prefix, full
-        namespaces[prefix] = full
+        real_prefix = prefix || new_ns
+        namespaces[real_prefix] = full
+        real_prefix
       end
 
       def lookup prefix

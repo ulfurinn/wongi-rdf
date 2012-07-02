@@ -1,3 +1,5 @@
+require 'uri'
+
 $: << "lib"
 
 RSpec.configure do |config|

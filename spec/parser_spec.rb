@@ -119,9 +119,44 @@ describe "the RDF parser" do
     statement.object.should == @document.blank( "blank1" )
   end
 
-  it 'should parse shortcut blanks'
+  it 'should parse shortcut blanks' do
+    test_document :shortcut
+    @document.statements.should have(3).items
 
-  it 'should remap namespaces from another document'
+    parent_statement = @document.statements.find { |st| st.subject.kind_of?( Wongi::RDF::Resource ) && st.subject.uri == URI.parse( "http://test/node1" ) }
+    parent_statement.should_not be_nil
+
+    blank = parent_statement.object
+    blank.should be_a_kind_of( Wongi::RDF::Blank )
+
+    child_statements = @document.statements.select { |st| st.subject == blank }
+    child_statements.should have(2).items
+
+  end
+
+  it 'should remap namespaces from another document' do
+    document = Wongi::RDF::Document.new
+    test_document :dup_prefixes1, document
+    test_document :dup_prefixes2, document
+
+    @document.namespaces.should have(2).items
+    @document.statements.should have(2).items
+
+    @document.statements.should include( Wongi::RDF::Statement.new "http://ns1/node1", "http://ns1/node2", "http://ns1/node3", @document )
+    @document.statements.should include( Wongi::RDF::Statement.new "http://ns2/node1", "http://ns2/node2", "http://ns2/node3", @document )
+  end
+
+  it 'should not remap equal namespaces' do
+    document = Wongi::RDF::Document.new
+    test_document :dup_prefixes1, document
+    test_document :dup_prefixes3, document
+
+    @document.namespaces.should have(1).item
+    @document.statements.should have(2).items
+
+    @document.statements.should include( Wongi::RDF::Statement.new "http://ns1/node1", "http://ns1/node2", "http://ns1/node3", @document )
+    @document.statements.should include( Wongi::RDF::Statement.new "http://ns1/node1", "http://ns1/node2", "http://ns1/node4", @document )
+  end
 
   it 'should remap blanks from another document' do
     document = Wongi::RDF::Document.new
