@@ -1,0 +1,6 @@
+Autotest.add_hook :initialize do |at|
+	at.add_mapping /\.so$/ do |f, _|
+		at.files_matching /spec\.rb/
+	end
+	at.add_exception /tmp.n3/
+end
