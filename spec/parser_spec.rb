@@ -30,7 +30,7 @@ describe "the RDF parser" do
 
   it 'should parse prefixes' do
     test_document :prefixes
-    @document.namespaces.should have(1).item
+    @document.should have(1).namespaces
     @document.namespaces.should have_key("ns")
     @document.namespaces["ns"].should be_a_kind_of( URI )
     @document.namespaces["ns"].to_s.should == "http://test/ns/"
@@ -41,7 +41,7 @@ describe "the RDF parser" do
     document.should be_empty
     test_document :prefixes, document
     @document.should == document
-    @document.namespaces.should have(1).item
+    @document.should have(1).namespaces
     @document.namespaces.should have_key("ns")
     @document.namespaces["ns"].should be_a_kind_of( URI )
     @document.namespaces["ns"].to_s.should == "http://test/ns/"
@@ -63,7 +63,7 @@ describe "the RDF parser" do
 
   it 'should parse n3 statements' do
     test_document :n3
-    @document.statements.should have(1).item
+    @document.should have(1).statements
 
     statement = @document.statements.first
     statement.subject.uri.to_s.should == "http://test/node1"
@@ -73,7 +73,7 @@ describe "the RDF parser" do
 
   it 'should parse simple statements with qnames' do
     test_document :qnames
-    @document.statements.should have(1).item
+    @document.should have(1).statements
 
     statement = @document.statements.first
     statement.subject.uri.to_s.should == "http://test/node1"
@@ -88,7 +88,7 @@ describe "the RDF parser" do
 
   it 'should parse object lists' do
     test_document :object_list
-    @document.statements.should have(3).items
+    @document.should have(3).statements
     @document.statements.should include( Wongi::RDF::Statement.new "test:node1", "test:node2", "test:node31", @document )
     @document.statements.should include( Wongi::RDF::Statement.new "test:node1", "test:node2", "test:node32", @document )
     @document.statements.should include( Wongi::RDF::Statement.new "test:node1", "test:node2", "test:node33", @document )
@@ -96,14 +96,14 @@ describe "the RDF parser" do
 
   it 'should parse predicate lists' do
     test_document :predicate_list
-    @document.statements.should have(2).items
+    @document.should have(2).statements
     @document.statements.should include( Wongi::RDF::Statement.new "test:node1", "test:node21", "test:node31", @document )
     @document.statements.should include( Wongi::RDF::Statement.new "test:node1", "test:node22", "test:node32", @document )
   end
 
   it 'should parse mixed object and predicate lists' do
     test_document :object_and_predicate_list
-    @document.statements.should have(3).items
+    @document.should have(3).statements
     @document.statements.should include( Wongi::RDF::Statement.new "test:node1", "test:node21", "test:node31", @document )
     @document.statements.should include( Wongi::RDF::Statement.new "test:node1", "test:node22", "test:node321", @document )
     @document.statements.should include( Wongi::RDF::Statement.new "test:node1", "test:node22", "test:node322", @document )
@@ -113,7 +113,7 @@ describe "the RDF parser" do
 
   it 'should parse blank nodes' do
     test_document :blanks
-    @document.statements.should have(1).item
+    @document.should have(1).statements
     statement = @document.statements.first
     statement.subject.should == @document.resource( "test:node1" )
     statement.predicate.should == @document.resource( "test:node2" )
@@ -122,7 +122,7 @@ describe "the RDF parser" do
 
   it 'should parse shortcut blanks' do
     test_document :shortcut
-    @document.statements.should have(3).items
+    @document.should have(3).statements
 
     parent_statement = @document.statements.find { |st| st.subject.kind_of?( Wongi::RDF::Resource ) && st.subject.uri == URI.parse( "http://test/node1" ) }
     parent_statement.should_not be_nil
@@ -140,7 +140,7 @@ describe "the RDF parser" do
     test_document :blanks, document
     test_document :blanks, document
 
-    @document.statements.should have(2).items
+    @document.should have(2).statements
 
     statement = @document.statements.first
     statement.subject.should == @document.resource( "test:node1" )
