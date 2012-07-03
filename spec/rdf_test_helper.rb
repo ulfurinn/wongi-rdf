@@ -1,16 +1,7 @@
 module RdfTestHelper
-  def file name
-    "spec/input/#{name}.n3"
-  end
 
-  def make_test_file string
-    File.open file("tmp"), "w" do |io|
-      io << string
-    end
-  end
-
-  def parse_test_file document = nil
-    @document = @parser.parse_file file("tmp"), document
+  def parse_test string, document = nil
+    @document = @parser.parse_string string, document
   end
 
   def test_document test_case, document = nil
@@ -18,9 +9,7 @@ module RdfTestHelper
     if string.nil?
       raise "Document '#{test_case}' is not defined"
     end
-    make_test_file string
-    parse_test_file document
+    parse_test string, document
   end
-
 
 end
