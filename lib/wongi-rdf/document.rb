@@ -14,6 +14,10 @@ module Wongi
         @used_blanks = { }
       end
 
+      def common!
+        register "rdf", URI.parse( "http://www.w3.org/1999/02/22-rdf-syntax-ns#" )
+      end
+
       def empty?
         statements.empty? && namespaces.empty?
       end

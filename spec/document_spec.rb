@@ -18,6 +18,11 @@ describe Wongi::RDF::Document do
     subject.namespaces.should be_empty
   end
 
+  it 'should provide a quick way to register common namespaces' do
+    subject.common!
+    subject.lookup( "rdf" ).should == URI.parse( 'http://www.w3.org/1999/02/22-rdf-syntax-ns#' )
+  end
+
   it 'should refuse to replace its base' do
     subject.base = URI.parse( 'http://test/base/' )
     lambda { subject.base = URI.parse( 'http://test/base/' ) }.should_not raise_error(Wongi::RDF::BaseExists)
