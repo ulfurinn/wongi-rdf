@@ -29,7 +29,7 @@ void reset_complect( pParserComplect complect ) {
 
 int open_file_stream( pParserComplect complect, pANTLR3_UINT8 file ) {
 
-    complect->stream = antlr3AsciiFileStreamNew( file );
+    complect->stream = antlr3FileStreamNew( file, ANTLR3_ENC_UTF8 );
 
     if ( complect->stream == NULL ) {
         fprintf( stderr, "returned null stream\n" );

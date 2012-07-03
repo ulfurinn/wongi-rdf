@@ -189,7 +189,7 @@ URI
 	{
 		pANTLR3_STRING text, sub;
 		text = GETTEXT();
-		sub = text->subString(text, 1, text->len-1 ); //  all but first and last
+		sub = text->subString(text, 1, text->len-2 ); //  all but first and last; for some reason we need to use -2 in antlr 3.4.. investigate
 		SETTEXT( sub );
 		//printf("extracted URI = \%s\n", GETTEXT()->chars );
 	}
