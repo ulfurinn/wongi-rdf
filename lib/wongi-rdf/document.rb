@@ -78,13 +78,18 @@ module Wongi
       end
 
       def << statement
-        [:subject, :predicate, :object].each do |node_name|
-          node = statement.send node_name
-          if node.kind_of? Blank
-            @used_blanks[node.id] = true
+        case statement
+        when Array
+          self << self.statement( *statement )
+        when Statement
+          [:subject, :predicate, :object].each do |node_name|
+            node = statement.send node_name
+            if node.kind_of? Blank
+              @used_blanks[node.id] = true
+            end
           end
+          statements << statement
         end
-        statements << statement
       end
 
       alias_method :assert, :<<

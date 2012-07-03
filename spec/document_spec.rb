@@ -55,4 +55,10 @@ describe Wongi::RDF::Document do
     lambda { subject.resource "unknown:node" }.should raise_error
   end
 
+  it 'should accept an array as shorthand' do
+    subject.register "test", "http://test/"
+    subject << ["test:node1", "test:node2", "test:node3"]
+    subject.should have(1).statements
+  end
+
 end
