@@ -134,30 +134,6 @@ describe "the RDF parser" do
 
   end
 
-  it 'should remap namespaces from another document' do
-    document = Wongi::RDF::Document.new
-    test_document :dup_prefixes1, document
-    test_document :dup_prefixes2, document
-
-    @document.namespaces.should have(2).items
-    @document.statements.should have(2).items
-
-    @document.statements.should include( Wongi::RDF::Statement.new "http://ns1/node1", "http://ns1/node2", "http://ns1/node3", @document )
-    @document.statements.should include( Wongi::RDF::Statement.new "http://ns2/node1", "http://ns2/node2", "http://ns2/node3", @document )
-  end
-
-  it 'should not remap equal namespaces' do
-    document = Wongi::RDF::Document.new
-    test_document :dup_prefixes1, document
-    test_document :dup_prefixes3, document
-
-    @document.namespaces.should have(1).item
-    @document.statements.should have(2).items
-
-    @document.statements.should include( Wongi::RDF::Statement.new "http://ns1/node1", "http://ns1/node2", "http://ns1/node3", @document )
-    @document.statements.should include( Wongi::RDF::Statement.new "http://ns1/node1", "http://ns1/node2", "http://ns1/node4", @document )
-  end
-
   it 'should remap blanks from another document' do
     document = Wongi::RDF::Document.new
     test_document :blanks, document
@@ -174,7 +150,6 @@ describe "the RDF parser" do
     remapped_statement.subject.should == @document.resource( "test:node1" )
     remapped_statement.predicate.should == @document.resource( "test:node2" )
     remapped_statement.object.should_not == @document.blank( "blank1" )
-
   end
 
 end

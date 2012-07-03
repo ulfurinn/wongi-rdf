@@ -11,11 +11,16 @@ module Wongi
       end
 
       def register prefix, full
-        existing = document.lookup prefix
-        if existing && existing != full
-          @ns_alias[prefix] = document.register( nil, full )
+        if @ns_alias.has_key? prefix
+          @ns_alias[prefix]
         else
-          document.register prefix, full
+          existing = document.lookup prefix
+          if existing && existing != full
+            @ns_alias[prefix] = document.register nil, full
+          elsif not existing
+            @ns_alias[prefix] = document.register prefix, full
+          end
+          @ns_alias[prefix]
         end
       end
 

@@ -61,19 +61,4 @@ module RdfTestInputs
   test:node1 test:node2 [ test:node31 test:node41 ; test:node32 test:node42 ] .
   shortcut_doc
 
-  input[:dup_prefixes1] = <<-dup_prefixes1_doc
-  @prefix ns: <http://ns1> .
-  ns:node1 ns:node2 ns:node3 .
-  dup_prefixes1_doc
-
-  input[:dup_prefixes2] = <<-dup_prefixes2_doc
-  @prefix ns: <http://ns2> .
-  ns:node1 ns:node2 ns:node3 .
-  dup_prefixes2_doc
-
-  input[:dup_prefixes3] = <<-dup_prefixes3_doc
-  @prefix ns: <http://ns1> .
-  ns:node1 ns:node2 ns:node4 .
-  dup_prefixes3_doc
-
 end
