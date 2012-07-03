@@ -20,7 +20,7 @@ module Wongi
 
       def base= b
         unless base.nil? || base == b
-          raise BaseException.new( "Cannot replace document base #{base} with #{b}" )
+          raise BaseExists.new( "Cannot replace document base #{base} with #{b}" )
         end
         @base = b
       end
@@ -33,7 +33,7 @@ module Wongi
         elsif parsed = Resource.parse_qname( uri ) and parsed.length == 2
           ns = lookup parsed[0]
           unless ns
-            raise "Unknown prefix #{parsed[0]} while expanding qname #{uri}"
+            raise UnknownQNameNamespace.new( *parsed )
           end
           ns + parsed[1]
         else
@@ -81,6 +81,16 @@ module Wongi
           end
         end
         statements << statement
+      end
+
+      alias_method :assert, :<<
+
+      def statement s, p, o
+        Statement.new s, p, o, self
+      end
+
+      def statement! s, p, o
+        self << Statement.new( s, p, o, self )
       end
 
       def has_blank? id

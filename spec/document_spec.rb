@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'wongi-rdf/exceptions'
 require 'wongi-rdf/node'
 require 'wongi-rdf/blank'
 require 'wongi-rdf/resource'
@@ -19,8 +20,8 @@ describe Wongi::RDF::Document do
 
   it 'should refuse to replace its base' do
     subject.base = URI.parse( 'http://test/base/' )
-    lambda { subject.base = URI.parse( 'http://test/base/' ) }.should_not raise_error(Wongi::RDF::BaseException)
-    lambda { subject.base = URI.parse( 'http://test/base1/' ) }.should raise_error(Wongi::RDF::BaseException)
+    lambda { subject.base = URI.parse( 'http://test/base/' ) }.should_not raise_error(Wongi::RDF::BaseExists)
+    lambda { subject.base = URI.parse( 'http://test/base1/' ) }.should raise_error(Wongi::RDF::BaseExists)
   end
 
   it 'should create a resource from a URI' do
@@ -43,6 +44,10 @@ describe Wongi::RDF::Document do
     resource = subject.resource "test:node1"
     resource.should be_a_kind_of( Wongi::RDF::Resource )
     resource.uri.to_s.should == 'http://test/node1'
+  end
+
+  it 'should fail to expand qnames from unknown namespaces' do
+    lambda { subject.resource "unknown:node" }.should raise_error
   end
 
 end

@@ -3,6 +3,7 @@ require 'rdf_test_helper'
 require 'rdf_test_inputs'
 
 require 'wongi-rdf/parser'
+require 'wongi-rdf/exceptions'
 require 'wongi-rdf/document'
 require 'wongi-rdf/node'
 require 'wongi-rdf/blank'
@@ -56,8 +57,8 @@ describe "the RDF parser" do
   it 'should not replace a document\'s base' do
     document = Wongi::RDF::Document.new
     document.base = URI.parse( 'http://test/base/' )
-    lambda { test_document :base, document }.should_not raise_error( Wongi::RDF::BaseException )
-    lambda { test_document :base1, document }.should raise_error( Wongi::RDF::BaseException )
+    lambda { test_document :base, document }.should_not raise_error( Wongi::RDF::BaseExists )
+    lambda { test_document :base1, document }.should raise_error( Wongi::RDF::BaseExists )
   end
 
   it 'should parse n3 statements' do

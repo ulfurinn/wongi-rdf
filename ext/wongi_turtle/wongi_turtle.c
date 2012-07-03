@@ -8,8 +8,6 @@ VALUE mRDF;
 VALUE cParser;
 VALUE cCollector;
 
-VALUE eBase;
-
 ID rbsym_ivar_document;
 ID rbsym_ivar_mapping;
 
@@ -24,7 +22,5 @@ void Init_wongi_turtle() {
 
 	define_parser();
 	cCollector = rb_path2class("Wongi::RDF::Collector");
-
-	eBase = rb_define_class_under( mRDF, "BaseException", rb_eException );
 
 }
