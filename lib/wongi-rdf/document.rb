@@ -32,6 +32,9 @@ module Wongi
       end
 
       def resource uri
+        if uri.kind_of?( Wongi::RDF::Node )
+          return uri.import( self )
+        end
         real_uri = if uri.kind_of? URI::Generic
           uri
         elsif uri.respond_to? :to_uri
@@ -51,7 +54,7 @@ module Wongi
 
       def expand qname
         if parsed = Resource.parse_qname( qname )
-          Resource.new( expand_split *parsed )
+          Resource.new( expand_split( *parsed ), self )
         end
       end
 

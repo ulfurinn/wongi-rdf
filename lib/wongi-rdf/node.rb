@@ -3,7 +3,7 @@ module Wongi
     class Node
 
       def == other
-        other.class == self.class
+        other.class == self.class && other.document == self.document
       end
 
     end

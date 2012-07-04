@@ -27,6 +27,14 @@ module Wongi
         uri.to_s
       end
 
+      def import document
+        if document == self.document
+          self
+        else
+          self.class.new uri, document
+        end
+      end
+
     end
   end
 end
