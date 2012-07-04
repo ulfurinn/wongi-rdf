@@ -4,6 +4,7 @@ require 'wongi-rdf/node'
 require 'wongi-rdf/blank'
 require 'wongi-rdf/resource'
 require 'wongi-rdf/statement'
+require 'wongi-rdf/searchable'
 require 'wongi-rdf/document'
 
 describe Wongi::RDF::Document do
@@ -44,21 +45,48 @@ describe Wongi::RDF::Document do
     lambda { subject.resource 42 }.should raise_error
   end
 
-  it 'should expand qnames' do
-    subject.register "test", URI.parse( 'http://test/' )
-    resource = subject.resource "test:node1"
-    resource.should be_a_kind_of( Wongi::RDF::Resource )
-    resource.uri.to_s.should == 'http://test/node1'
-  end
-
   it 'should fail to expand qnames from unknown namespaces' do
     lambda { subject.resource "unknown:node" }.should raise_error
   end
 
-  it 'should accept an array as shorthand' do
-    subject.register "test", "http://test/"
-    subject << ["test:node1", "test:node2", "test:node3"]
-    subject.should have(1).statements
+  context "with a known namespace" do
+
+    before :each do
+      subject.register "test", URI.parse( "http://test/" )
+    end
+
+    it 'should expand qnames' do
+      resource = subject.resource "test:node1"
+      resource.should be_a_kind_of( Wongi::RDF::Resource )
+      resource.uri.to_s.should == 'http://test/node1'
+    end
+
+    it 'should accept an array as shorthand' do
+      subject << ["test:node1", "test:node2", "test:node3"]
+      subject.should have(1).statements
+    end
+
+    context "with some statements" do
+
+      before :each do
+        subject << ["test:node1", "test:node2", "test:node3"]
+      end
+
+      it 'should search using shorthand method :find' do
+        statement = subject.find subject.expand("test:node1"), subject.expand("test:node2"), subject.expand("test:node3")
+        statement.should_not be_nil
+        statement.subject.should == subject.expand( "test:node1" )
+        statement.predicate.should == subject.expand( "test:node2" )
+        statement.object.should == subject.expand( "test:node3" )
+      end
+
+      it 'should select with nils' do
+        statements = subject.select subject.expand("test:node1"), nil, nil
+        statements.should have(1).item
+      end
+
+    end
+
   end
 
 end

@@ -2,6 +2,8 @@ module Wongi
   module RDF
     class Document
 
+      include Wongi::RDF::Searchable
+
       attr_reader :statements
       attr_reader :namespaces
       attr_reader :base
@@ -34,12 +36,8 @@ module Wongi
           uri
         elsif uri.respond_to? :to_uri
           uri.to_uri
-        elsif parsed = Resource.parse_qname( uri ) and parsed.length == 2
-          ns = lookup parsed[0]
-          unless ns
-            raise UnknownQNameNamespace.new( *parsed )
-          end
-          ns + parsed[1]
+        elsif parsed = Resource.parse_qname( uri )
+          expand_split *parsed
         else
           begin
             URI.parse uri
@@ -49,6 +47,12 @@ module Wongi
         end
         raise "Cannot create an RDF resource from #{uri}" unless real_uri
         Resource.new real_uri, self
+      end
+
+      def expand qname
+        if parsed = Resource.parse_qname( qname )
+          Resource.new( expand_split *parsed )
+        end
       end
 
       def blank id = nil
@@ -69,7 +73,7 @@ module Wongi
 
       def register prefix, full
         real_prefix = prefix || new_ns
-        namespaces[real_prefix] = full
+        namespaces[real_prefix] = if full.is_a? URI::Generic then full else URI.parse full end
         real_prefix
       end
 
@@ -104,6 +108,20 @@ module Wongi
 
       def has_blank? id
         @used_blanks[id]
+      end
+
+      private
+
+      def expand_split ns, local
+        ns = lookup ns
+        if ns.nil?
+          raise UnknownQNameNamespace.new( ns, local )
+        end
+        if ns.to_s[-1] == "#"   # => concatenating URIs doesn't work when it ends with a hash...
+          URI.parse( ns.to_s + local )
+        else
+          ns + local
+        end
       end
 
     end 

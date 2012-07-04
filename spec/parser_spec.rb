@@ -4,6 +4,7 @@ require 'rdf_test_inputs'
 
 require 'wongi-rdf/parser'
 require 'wongi-rdf/exceptions'
+require 'wongi-rdf/searchable'
 require 'wongi-rdf/document'
 require 'wongi-rdf/node'
 require 'wongi-rdf/blank'
