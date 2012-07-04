@@ -110,7 +110,42 @@ describe "the RDF parser" do
     @document.statements.should include( Wongi::RDF::Statement.new "test:node1", "test:node22", "test:node322", @document )
   end
 
-  it 'should parse collections'
+  context 'when parsing collections' do
+
+    it 'should parse empty collections' do
+      test_document :empty_collection
+
+      @document.should have(1).statements
+      @document.statements.first.object.should == @document.expand( "rdf:nil" )
+    end
+
+    it 'should parse one-element collections' do
+      test_document :one_element_collection
+
+      @document.should have(3).statements
+      first = @document.find( @document.expand("test:node1"), @document.expand("test:node2"), nil )
+      first.should_not be_nil
+      blank = first.object
+      @document.should contain( blank, @document.expand("rdf:first"), @document.expand("test:node31") )
+      @document.should contain( blank, @document.expand("rdf:rest"), @document.expand("rdf:nil") )
+    end
+
+    it 'should parse two-element collections' do
+      test_document :two_element_collection
+
+      @document.should have(5).statements
+
+      collection = @document.find( @document.expand("test:node1"), @document.expand("test:node2"), nil ).object
+      @document.should contain( collection, @document.expand("rdf:first"), @document.expand("test:node31") )
+
+      second = @document.find( collection, @document.expand("rdf:rest"), nil ).object
+
+      @document.should contain( second, @document.expand("rdf:first"), @document.expand("test:node32") )
+      @document.should contain( second, @document.expand("rdf:rest"), @document.expand("rdf:nil") )
+
+    end
+
+  end
 
   it 'should parse blank nodes' do
     test_document :blanks

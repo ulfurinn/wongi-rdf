@@ -12,11 +12,14 @@ options {
 	#include <ruby.h>
 	#include "extern.h"
 
-	#define COLLECTOR_DOCUMENT rb_funcall( collector, rb_intern("document"), 0 )
-	#define MATCH(string) printf("matched " string "\n");
+	#define COLLECTOR_DOCUMENT   rb_funcall( collector, rb_intern("document"), 0 )
+	#define MATCH(string)        printf("matched " string "\n");
 
-	#define RDF_NS "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-	#define RDF_TYPE RDF_NS "type"
+	#define RDF_NS     "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	#define RDF_TYPE   RDF_NS   "type"
+	#define RDF_FIRST  RDF_NS   "first"
+	#define RDF_REST   RDF_NS   "rest"
+	#define RDF_NIL    RDF_NS   "nil"
 
 }
 
@@ -95,7 +98,7 @@ verb[VALUE collector] returns [VALUE node]
 	|
 	'a' {
 		VALUE rbDocument = COLLECTOR_DOCUMENT;
-		rb_funcall( rbDocument, rb_intern("register"), 2, rb_str_new2("rdf"), rb_str_new2(RDF_NS) );
+		rb_funcall( rbDocument, rb_intern("common!"), 0 );
 		$node = rb_funcall( rbDocument, rb_intern("resource"), 1, rb_str_new2(RDF_TYPE) );
 	}
 	;
@@ -156,6 +159,39 @@ blank[VALUE collector] returns [VALUE node]
 			$blank.node = rb_funcall( rbDocument, rb_intern("blank"), 1, Qnil );
 		}
 		'[' predicate_object_list[ collector, $blank.node ]? ']'
+	|
+		'(' collection[collector] ')'
+		{
+			$node = $collection.node;
+		}
+	;
+
+collection[VALUE collector] returns [VALUE node]
+	@init {
+		VALUE rbDocument = COLLECTOR_DOCUMENT;
+		$node = Qnil;
+	}
+	:
+		{
+			rb_funcall( rbDocument, rb_intern("common!"), 0 );
+			$node = rb_funcall( rbDocument, rb_intern("resource"), 1, rb_str_new2(RDF_NIL) );
+		}
+	|
+		object[collector]
+		{
+			$node = rb_funcall( rbDocument, rb_intern("blank"), 1, Qnil );
+			VALUE first = rb_funcall( rbDocument, rb_intern("resource"), 1, rb_str_new2(RDF_FIRST) );
+			VALUE argv[] = { $node, first, $object.node };
+			VALUE statement = rb_class_new_instance( 3, argv, rb_path2class("Wongi::RDF::Statement") );
+			rb_funcall( rbDocument, rb_intern("<<"), 1, statement );
+		}
+		subseq=collection[collector]
+		{
+			VALUE rest = rb_funcall( rbDocument, rb_intern("resource"), 1, rb_str_new2(RDF_REST) );
+			VALUE argv[] = { $node, rest, $subseq.node };
+			VALUE statement = rb_class_new_instance( 3, argv, rb_path2class("Wongi::RDF::Statement") );
+			rb_funcall( rbDocument, rb_intern("<<"), 1, statement );
+		}
 	;
 
 uri[VALUE collector] returns [VALUE ruby_uri]

@@ -61,4 +61,18 @@ module RdfTestInputs
   test:node1 test:node2 [ test:node31 test:node41 ; test:node32 test:node42 ] .
   shortcut_doc
 
+  input[:empty_collection] = <<-empty_collection_doc
+  @prefix test: <http://test/> .
+  test:node1 test:node2 ( ) .
+  empty_collection_doc
+
+  input[:one_element_collection] = <<-one_element_collection_doc
+  @prefix test: <http://test/> .
+  test:node1 test:node2 ( test:node31 ) .
+  one_element_collection_doc
+
+  input[:two_element_collection] = <<-two_element_collection_doc
+  @prefix test: <http://test/> .
+  test:node1 test:node2 ( test:node31 test:node32 ) .
+  two_element_collection_doc
 end
