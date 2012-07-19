@@ -5,8 +5,6 @@ module Wongi::RDF
       @document = document
       @offset = 4
       @offset_method = :spaces
-      @ns_counter = 0
-      @shorthanded = []
     end
 
     def serialize
@@ -37,6 +35,9 @@ module Wongi::RDF
       return unless document
       return unless io.respond_to? :<<
       @offset_level = 0
+      @ns_counter = 0
+      @shorthanded = []
+      @postponed = []
 
       if document.base
         io << emit( "@base #{uri_to_s document.base} .\n" )
@@ -49,6 +50,15 @@ module Wongi::RDF
       end
 
       document.statements.each do |st|
+        next if @shorthanded.include?( st )
+        if st.subject.is_a?( Blank )
+          @postponed << st
+          next
+        end
+        io << emit( "#{resource_to_s st, :subject} #{resource_to_s st, :predicate} #{resource_to_s st, :object} .\n" )
+      end
+
+      @postponed.each do |st|
         next if @shorthanded.include?( st )
         io << emit( "#{resource_to_s st, :subject} #{resource_to_s st, :predicate} #{resource_to_s st, :object} .\n" )
       end
@@ -106,7 +116,7 @@ module Wongi::RDF
       out = "[\n"
       subsequent = false
       indent do
-        document.select(blank, nil, nil).each do |st|
+        document.select(blank, :_, :_).each do |st|
           next if @shorthanded.include?( st )
           @shorthanded << st
           out << (subsequent ? ";\n" : "") << emit( "#{resource_to_s st, :predicate} #{resource_to_s st, :object} " )

@@ -5,6 +5,7 @@ require 'wongi-rdf/blank'
 require 'wongi-rdf/resource'
 require 'wongi-rdf/statement'
 require 'wongi-rdf/searchable'
+require 'wongi-rdf/document_support'
 require 'wongi-rdf/document'
 
 describe Wongi::RDF::Document do
@@ -21,7 +22,7 @@ describe Wongi::RDF::Document do
 
   it 'should provide a quick way to register common namespaces' do
     subject.common!
-    subject.lookup( "rdf" ).should == URI.parse( 'http://www.w3.org/1999/02/22-rdf-syntax-ns#' )
+    subject.lookup_namespace( "rdf" ).should == URI.parse( 'http://www.w3.org/1999/02/22-rdf-syntax-ns#' )
   end
 
   it 'should refuse to replace its base' do
@@ -80,8 +81,8 @@ describe Wongi::RDF::Document do
         statement.object.should == subject.expand( "test:node3" )
       end
 
-      it 'should select with nils' do
-        statements = subject.select subject.expand("test:node1"), nil, nil
+      it 'should select with all-matchers' do
+        statements = subject.select subject.expand("test:node1"), :_, :_
         statements.should have(1).item
       end
 

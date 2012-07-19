@@ -5,6 +5,7 @@ module Wongi
 end
 
 require 'uri'
+require 'stringio'
 
 require 'wongi-rdf/version'
 require 'wongi-rdf/exceptions'
@@ -14,6 +15,7 @@ require 'wongi-rdf/resource'
 require 'wongi-rdf/statement'
 require 'wongi-rdf/collector'
 require 'wongi-rdf/searchable'
+require 'wongi-rdf/document_support'
 require 'wongi-rdf/document'
 require 'wongi-rdf/serializer'
 require 'wongi-rdf/parser'

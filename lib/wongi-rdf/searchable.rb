@@ -3,7 +3,7 @@ module Wongi::RDF
 
     def find s, p, o
       statements.find { |st|
-        ( s.nil? || s == st.subject ) && ( p.nil? || p == st.predicate ) && ( o.nil? || o == st.object )
+        ( s == :_ || s == st.subject ) && ( p == :_ || p == st.predicate ) && ( o == :_ || o == st.object )
       }
     end
 
@@ -13,7 +13,7 @@ module Wongi::RDF
 
     def select s, p, o
       statements.select { |st|
-        ( s.nil? || s == st.subject ) && ( p.nil? || p == st.predicate ) && ( o.nil? || o == st.object )
+        ( s == :_ || s == st.subject ) && ( p == :_ || p == st.predicate ) && ( o == :_ || o == st.object )
       }
     end
 

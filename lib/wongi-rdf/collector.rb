@@ -14,7 +14,7 @@ module Wongi
         if @ns_alias.has_key? prefix
           @ns_alias[prefix]
         else
-          existing = document.lookup prefix
+          existing = document.lookup_namespace prefix
           if existing && existing != full
             @ns_alias[prefix] = document.register nil, full
           elsif not existing
@@ -26,9 +26,9 @@ module Wongi
 
       def lookup prefix
         if @ns_alias.has_key? prefix
-          document.lookup @ns_alias[prefix]
+          document.lookup_namespace @ns_alias[prefix]
         else
-          document.lookup prefix
+          document.lookup_namespace prefix
         end
       end
 

@@ -5,6 +5,7 @@ require 'rdf_test_inputs'
 require 'wongi-rdf/parser'
 require 'wongi-rdf/exceptions'
 require 'wongi-rdf/searchable'
+require 'wongi-rdf/document_support'
 require 'wongi-rdf/document'
 require 'wongi-rdf/node'
 require 'wongi-rdf/blank'
@@ -123,7 +124,7 @@ describe "the RDF parser" do
       test_document :one_element_collection
 
       @document.should have(3).statements
-      first = @document.find( @document.expand("test:node1"), @document.expand("test:node2"), nil )
+      first = @document.find( @document.expand("test:node1"), @document.expand("test:node2"), :_ )
       first.should_not be_nil
       blank = first.object
       @document.should contain( blank, @document.expand("rdf:first"), @document.expand("test:node31") )
@@ -135,10 +136,10 @@ describe "the RDF parser" do
 
       @document.should have(5).statements
 
-      collection = @document.find( @document.expand("test:node1"), @document.expand("test:node2"), nil ).object
+      collection = @document.find( @document.expand("test:node1"), @document.expand("test:node2"), :_ ).object
       @document.should contain( collection, @document.expand("rdf:first"), @document.expand("test:node31") )
 
-      second = @document.find( collection, @document.expand("rdf:rest"), nil ).object
+      second = @document.find( collection, @document.expand("rdf:rest"), :_ ).object
 
       @document.should contain( second, @document.expand("rdf:first"), @document.expand("test:node32") )
       @document.should contain( second, @document.expand("rdf:rest"), @document.expand("rdf:nil") )

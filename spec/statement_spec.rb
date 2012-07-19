@@ -3,6 +3,7 @@ require 'wongi-rdf/blank'
 require 'wongi-rdf/resource'
 require 'wongi-rdf/statement'
 require 'wongi-rdf/searchable'
+require 'wongi-rdf/document_support'
 require 'wongi-rdf/document'
 
 describe Wongi::RDF::Statement do
