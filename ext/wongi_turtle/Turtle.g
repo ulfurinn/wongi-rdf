@@ -137,7 +137,7 @@ qname[VALUE collector] returns [VALUE ruby_uri]
 		//  but this screws up the entire namespacing.
 		//  To avoid this, we prepend # to the local part.
 		if( prefixURI == Qnil ) {
-			rb_raise( rb_eException, "Unknown prefix \%s", rb_ary_entry( split, 0 ) );
+			rb_raise( rb_eException, "Unknown prefix \%s", RSTRING_PTR( rb_ary_entry( split, 0 ) ) );
 		}
 		VALUE hash_fragment = rb_funcall( prefixURI, rb_intern("fragment"), 0 );
 		if( hash_fragment != Qnil ) {
