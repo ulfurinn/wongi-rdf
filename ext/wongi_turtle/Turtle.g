@@ -139,12 +139,18 @@ qname[VALUE collector] returns [VALUE ruby_uri]
 		if( prefixURI == Qnil ) {
 			rb_raise( rb_eException, "Unknown prefix \%s", RSTRING_PTR( rb_ary_entry( split, 0 ) ) );
 		}
-		VALUE hash_fragment = rb_funcall( prefixURI, symFragment, 0 );
-		if( hash_fragment != Qnil ) {
-		  localStr = rb_funcall( rb_str_new2("#"), symPLUS, 1, localStr );
-		} 
+		//VALUE hash_fragment = rb_funcall( prefixURI, symFragment, 0 );
+		//if( hash_fragment != Qnil ) {
+		//  localStr = rb_funcall( rb_str_new2("#"), symPLUS, 1, localStr );
+		//} 
 		
-		$ruby_uri = rb_funcall( prefixURI, symPLUS, 1, rb_funcall( cURI, symEscape, 1, localStr ) );
+		$ruby_uri = rb_funcall(
+			cURI, symParse, 1, rb_funcall(
+				cURI, symEscape, 1, rb_funcall(
+					rb_funcall( prefixURI, rb_intern("to_s"), 0 ), symPLUS, 1, localStr
+				)
+			)
+		);
 	}
 	;
 
