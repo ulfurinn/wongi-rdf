@@ -38,9 +38,9 @@ directive[VALUE collector]
 
 namespace_declaration[VALUE collector]
 	:
-	'@prefix' IDENT ':' uri[collector]
+	'@prefix' PREFIX uri[collector]
 	{
-		VALUE rbPrefix = rb_str_new2( $IDENT.text->chars );
+		VALUE rbPrefix = rb_str_new2( $PREFIX.text->chars );
 		VALUE rbFull = $uri.ruby_uri;
 
 		rb_funcall( collector, rb_intern("register"), 2, rbPrefix, rbFull );
@@ -125,17 +125,19 @@ resource[ VALUE collector ] returns [VALUE node]
 qname[VALUE collector] returns [VALUE ruby_uri]
 	@init { $ruby_uri = Qnil; }
 	:
-	prefix=IDENT ':' local=IDENT
+	qn=QNAME
 	{
 		VALUE rbDocument = COLLECTOR_DOCUMENT;
-		VALUE prefixURI = rb_funcall( collector, rb_intern("lookup"), 1, rb_str_new2( $prefix.text->chars ) );
-	    VALUE localStr = rb_str_new2( $local.text->chars );
+		VALUE qnStr = rb_str_new2( $qn.text->chars );
+		VALUE split = rb_funcall( qnStr, rb_intern("split"), 1, rb_str_new2(":") );
+		VALUE prefixURI = rb_funcall( collector, rb_intern("lookup"), 1, rb_ary_entry( split, 0 ) );
+	    VALUE localStr = rb_ary_entry( split, 1 );
 	    
 	    //  Ruby URI replaces the whole last segment when it ends with a #
 	    //  but this screws up the entire namespacing.
 	    //  To avoid this, we prepend # to the local part.
 	    if( prefixURI == Qnil ) {
-	        rb_raise( rb_eException, "Unknown prefix \%s", $prefix.text->chars );
+	        rb_raise( rb_eException, "Unknown prefix \%s", rb_ary_entry( split, 0 ) );
 	    }
 	    VALUE hash_fragment = rb_funcall( prefixURI, rb_intern("fragment"), 0 );
 	    if( hash_fragment != Qnil ) {
@@ -149,8 +151,8 @@ qname[VALUE collector] returns [VALUE ruby_uri]
 blank[VALUE collector] returns [VALUE node]
 	@init { $node = Qnil; }
 	:
-	'_:' IDENT {
-		VALUE id = rb_str_new2( $IDENT.text->chars );
+	BLANK {
+		VALUE id = rb_str_new2( $BLANK.text->chars );
 		$node = rb_funcall( $collector, rb_intern("import_blank"), 1, id );
 	}
 	|
@@ -244,6 +246,21 @@ IDENT
     	| '-'
     	| '0'..'9'
   	)*
+	;
+
+QNAME : IDENT ':' IDENT ;
+
+PREFIX : ident=IDENT ':' 
+	{
+		SETTEXT( $ident->getText($ident) );
+	}
+	;
+
+BLANK :
+	'_:' ident=IDENT
+	{
+		SETTEXT( $ident->getText($ident) );
+	}
 	;
 
 WS
