@@ -131,20 +131,20 @@ qname[VALUE collector] returns [VALUE ruby_uri]
 		VALUE qnStr = rb_str_new2( $qn.text->chars );
 		VALUE split = rb_funcall( qnStr, rb_intern("split"), 1, rb_str_new2(":") );
 		VALUE prefixURI = rb_funcall( collector, rb_intern("lookup"), 1, rb_ary_entry( split, 0 ) );
-	    VALUE localStr = rb_ary_entry( split, 1 );
-	    
-	    //  Ruby URI replaces the whole last segment when it ends with a #
-	    //  but this screws up the entire namespacing.
-	    //  To avoid this, we prepend # to the local part.
-	    if( prefixURI == Qnil ) {
-	        rb_raise( rb_eException, "Unknown prefix \%s", rb_ary_entry( split, 0 ) );
-	    }
-	    VALUE hash_fragment = rb_funcall( prefixURI, rb_intern("fragment"), 0 );
-	    if( hash_fragment != Qnil ) {
-	      localStr = rb_funcall( rb_str_new2("#"), rb_intern("+"), 1, localStr );
-	    } 
-	    
-	    $ruby_uri = rb_funcall( prefixURI, rb_intern("+"), 1, localStr );
+		VALUE localStr = rb_ary_entry( split, 1 );
+		
+		//  Ruby URI replaces the whole last segment when it ends with a #
+		//  but this screws up the entire namespacing.
+		//  To avoid this, we prepend # to the local part.
+		if( prefixURI == Qnil ) {
+			rb_raise( rb_eException, "Unknown prefix \%s", rb_ary_entry( split, 0 ) );
+		}
+		VALUE hash_fragment = rb_funcall( prefixURI, rb_intern("fragment"), 0 );
+		if( hash_fragment != Qnil ) {
+		  localStr = rb_funcall( rb_str_new2("#"), rb_intern("+"), 1, localStr );
+		} 
+		
+		$ruby_uri = rb_funcall( prefixURI, rb_intern("+"), 1, localStr );
 	}
 	;
 
@@ -236,16 +236,16 @@ URI
 IDENT
 	:
 	(
-    	'a'..'z'
-    	| 'A'..'Z'
-  	)
-  	(
-    	'A'..'Z'
-    	| '_'
-    	| 'a'..'z'
-    	| '-'
-    	| '0'..'9'
-  	)*
+		'a'..'z'
+		| 'A'..'Z'
+	)
+	(
+		'A'..'Z'
+		| '_'
+		| 'a'..'z'
+		| '-'
+		| '0'..'9'
+	)*
 	;
 
 QNAME : IDENT ':' IDENT ;
@@ -265,10 +265,10 @@ BLANK :
 
 WS
 	:
-   	(' '
-   	| '\t'
-   	| '\r'
-   	| '\n')+
+	(' '
+	| '\t'
+	| '\r'
+	| '\n')+
 	{
 		$channel=HIDDEN;
 	}
