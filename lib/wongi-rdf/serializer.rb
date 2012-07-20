@@ -40,13 +40,13 @@ module Wongi::RDF
       @postponed = []
 
       if document.base
-        io << emit( "@base #{uri_to_s document.base} .\n" )
+        io << emit( URI.unescape "@base #{uri_to_s document.base} .\n" )
       end
 
       extract_namespaces
 
       document.namespaces.each do |prefix, full|
-        io << emit( "@prefix #{prefix}: #{uri_to_s full} .\n" )
+        io << emit( URI.unescape "@prefix #{prefix}: #{uri_to_s full} .\n" )
       end
 
       document.statements.each do |st|
@@ -94,9 +94,9 @@ module Wongi::RDF
       when Resource
         ns, local = *split_uri( res )
         if ns && prefix = document.namespaces.key( ns )
-          "#{prefix}:#{local}"
+          URI.unescape( prefix + ":" + local )
         else
-          uri_to_s res.uri
+          URI.unescape( uri_to_s res.uri )
         end
       when Blank
         if member == :object && single_reference?( res, st )

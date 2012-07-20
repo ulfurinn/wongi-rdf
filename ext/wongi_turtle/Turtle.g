@@ -144,7 +144,7 @@ qname[VALUE collector] returns [VALUE ruby_uri]
 		  localStr = rb_funcall( rb_str_new2("#"), rb_intern("+"), 1, localStr );
 		} 
 		
-		$ruby_uri = rb_funcall( prefixURI, rb_intern("+"), 1, localStr );
+		$ruby_uri = rb_funcall( prefixURI, rb_intern("+"), 1, rb_funcall( rb_path2class("URI"), rb_intern("escape"), 1, localStr ) );
 	}
 	;
 
@@ -202,7 +202,7 @@ uri[VALUE collector] returns [VALUE ruby_uri]
 	{
 		pANTLR3_STRING str = $URI.text /*$URI.text->toUTF8($URI.text)*/ ;
 		VALUE rb_strUri = rb_str_new2( str->chars );
-		$ruby_uri = rb_funcall( rb_path2class("URI"), rb_intern("parse"), 1, rb_strUri );
+		$ruby_uri = rb_funcall( rb_path2class("URI"), rb_intern("parse"), 1, rb_funcall( rb_path2class("URI"), rb_intern("escape"), 1, rb_strUri ) );
 
 		if( ! rb_funcall($ruby_uri, rb_intern("absolute?"), 0) ) {
 			//  relative uri encountered
@@ -237,15 +237,48 @@ IDENT
 	:
 	(
 		'a'..'z'
+		| '_'
 		| 'A'..'Z'
+		| '\u00c0'..'\u00d6'
+		| '\u00d8'..'\u00f6'
+		| '\u00f8'..'\u02ff'
+		| '\u0370'..'\u037d'
+		| '\u037f'..'\u1fff'
+		| '\u200c'..'\u200d'
+		| '\u2070'..'\u218f'
+		| '\u2c00'..'\u2fef'
+		| '\u3001'..'\ud7ff'
+		| '\uf900'..'\ufdcf'
+		| '\ufdf0'..'\ufffd'
 	)
 	(
-		'A'..'Z'
+		'a'..'z'
 		| '_'
-		| 'a'..'z'
+		| 'A'..'Z'
+		| '\u00c0'..'\u00d6'
+		| '\u00d8'..'\u00f6'
+		| '\u00f8'..'\u02ff'
+		| '\u0370'..'\u037d'
+		| '\u037f'..'\u1fff'
+		| '\u200c'..'\u200d'
+		| '\u2070'..'\u218f'
+		| '\u2c00'..'\u2fef'
+		| '\u3001'..'\ud7ff'
+		| '\uf900'..'\ufdcf'
+		| '\ufdf0'..'\ufffd'
 		| '-'
 		| '0'..'9'
+		| '\u00b7'
+		| '\u0300'..'\u036f'
+		| '\u203f'..'\u2040'
 	)*
+	;
+
+BLANK :
+	'_:' ident=IDENT
+	{
+		SETTEXT( $ident->getText($ident) );
+	}
 	;
 
 QNAME : IDENT ':' IDENT ;
@@ -256,12 +289,6 @@ PREFIX : ident=IDENT ':'
 	}
 	;
 
-BLANK :
-	'_:' ident=IDENT
-	{
-		SETTEXT( $ident->getText($ident) );
-	}
-	;
 
 WS
 	:
