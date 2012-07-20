@@ -12,7 +12,7 @@ options {
 	#include <ruby.h>
 	#include "extern.h"
 
-	#define COLLECTOR_DOCUMENT   rb_funcall( collector, rb_intern("document"), 0 )
+	#define COLLECTOR_DOCUMENT   rb_funcall( collector, symDocument, 0 )
 	#define MATCH(string)        printf("matched " string "\n");
 
 	#define RDF_NS     "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -43,7 +43,7 @@ namespace_declaration[VALUE collector]
 		VALUE rbPrefix = rb_str_new2( $PREFIX.text->chars );
 		VALUE rbFull = $uri.ruby_uri;
 
-		rb_funcall( collector, rb_intern("register"), 2, rbPrefix, rbFull );
+		rb_funcall( collector, symRegister, 2, rbPrefix, rbFull );
 	}
 	;
 
@@ -52,7 +52,7 @@ base_declaration[VALUE collector]
 	'@base' uri[collector]
 	{
 		VALUE rbDocument = COLLECTOR_DOCUMENT;
-		rb_funcall( rbDocument, rb_intern("base="), 1, $uri.ruby_uri );
+		rb_funcall( rbDocument, symBaseEQ, 1, $uri.ruby_uri );
 	}
 	;
 
@@ -76,13 +76,13 @@ object_list[VALUE collector, VALUE subject, VALUE predicate]
 	:
 	first=object[collector] {
 		VALUE argv[] = { $subject, $predicate, $first.node };
-		VALUE statement = rb_class_new_instance( 3, argv, rb_path2class("Wongi::RDF::Statement") );
-		rb_funcall( rbDocument, rb_intern("<<"), 1, statement );
+		VALUE statement = rb_class_new_instance( 3, argv, cStatement );
+		rb_funcall( rbDocument, symLSHIFT, 1, statement );
 	}
 	(',' subseq=object[collector] {
 		VALUE argv[] = { $subject, $predicate, $subseq.node };
-		VALUE statement = rb_class_new_instance( 3, argv, rb_path2class("Wongi::RDF::Statement") );
-		rb_funcall( rbDocument, rb_intern("<<"), 1, statement );
+		VALUE statement = rb_class_new_instance( 3, argv, cStatement );
+		rb_funcall( rbDocument, symLSHIFT, 1, statement );
 	} )*
 	;
 
@@ -98,8 +98,8 @@ verb[VALUE collector] returns [VALUE node]
 	|
 	'a' {
 		VALUE rbDocument = COLLECTOR_DOCUMENT;
-		rb_funcall( rbDocument, rb_intern("common!"), 0 );
-		$node = rb_funcall( rbDocument, rb_intern("resource"), 1, rb_str_new2(RDF_TYPE) );
+		rb_funcall( rbDocument, symCommonEXCL, 0 );
+		$node = rb_funcall( rbDocument, symResource, 1, rb_str_new2(RDF_TYPE) );
 	}
 	;
 
@@ -118,8 +118,8 @@ object[VALUE collector] returns [VALUE node]
 resource[ VALUE collector ] returns [VALUE node]
 	@init{ VALUE rbDocument = COLLECTOR_DOCUMENT; $node = Qnil; }
 	:
-	qname[collector] { $node = rb_funcall( rbDocument, rb_intern("resource"), 1, $qname.ruby_uri ); }
-	| uri[collector] { $node = rb_funcall( rbDocument, rb_intern("resource"), 1, $uri.ruby_uri ); }
+	qname[collector] { $node = rb_funcall( rbDocument, symResource, 1, $qname.ruby_uri ); }
+	| uri[collector] { $node = rb_funcall( rbDocument, symResource, 1, $uri.ruby_uri ); }
 	;
 
 qname[VALUE collector] returns [VALUE ruby_uri]
@@ -129,8 +129,8 @@ qname[VALUE collector] returns [VALUE ruby_uri]
 	{
 		VALUE rbDocument = COLLECTOR_DOCUMENT;
 		VALUE qnStr = rb_str_new2( $qn.text->chars );
-		VALUE split = rb_funcall( qnStr, rb_intern("split"), 1, rb_str_new2(":") );
-		VALUE prefixURI = rb_funcall( collector, rb_intern("lookup"), 1, rb_ary_entry( split, 0 ) );
+		VALUE split = rb_funcall( qnStr, symSplit, 1, rb_str_new2(":") );
+		VALUE prefixURI = rb_funcall( collector, symLookup, 1, rb_ary_entry( split, 0 ) );
 		VALUE localStr = rb_ary_entry( split, 1 );
 		
 		//  Ruby URI replaces the whole last segment when it ends with a #
@@ -139,12 +139,12 @@ qname[VALUE collector] returns [VALUE ruby_uri]
 		if( prefixURI == Qnil ) {
 			rb_raise( rb_eException, "Unknown prefix \%s", RSTRING_PTR( rb_ary_entry( split, 0 ) ) );
 		}
-		VALUE hash_fragment = rb_funcall( prefixURI, rb_intern("fragment"), 0 );
+		VALUE hash_fragment = rb_funcall( prefixURI, symFragment, 0 );
 		if( hash_fragment != Qnil ) {
-		  localStr = rb_funcall( rb_str_new2("#"), rb_intern("+"), 1, localStr );
+		  localStr = rb_funcall( rb_str_new2("#"), symPLUS, 1, localStr );
 		} 
 		
-		$ruby_uri = rb_funcall( prefixURI, rb_intern("+"), 1, rb_funcall( rb_path2class("URI"), rb_intern("escape"), 1, localStr ) );
+		$ruby_uri = rb_funcall( prefixURI, symPLUS, 1, rb_funcall( cURI, symEscape, 1, localStr ) );
 	}
 	;
 
@@ -153,12 +153,12 @@ blank[VALUE collector] returns [VALUE node]
 	:
 	BLANK {
 		VALUE id = rb_str_new2( $BLANK.text->chars );
-		$node = rb_funcall( $collector, rb_intern("import_blank"), 1, id );
+		$node = rb_funcall( $collector, symImportBlank, 1, id );
 	}
 	|
 		{
 			VALUE rbDocument = COLLECTOR_DOCUMENT;
-			$blank.node = rb_funcall( rbDocument, rb_intern("blank"), 1, Qnil );
+			$blank.node = rb_funcall( rbDocument, symBlank, 1, Qnil );
 		}
 		'[' predicate_object_list[ collector, $blank.node ]? ']'
 	|
@@ -175,24 +175,24 @@ collection[VALUE collector] returns [VALUE node]
 	}
 	:
 		{
-			rb_funcall( rbDocument, rb_intern("common!"), 0 );
-			$node = rb_funcall( rbDocument, rb_intern("resource"), 1, rb_str_new2(RDF_NIL) );
+			rb_funcall( rbDocument, symCommonEXCL, 0 );
+			$node = rb_funcall( rbDocument, symResource, 1, rb_str_new2(RDF_NIL) );
 		}
 	|
 		object[collector]
 		{
-			$node = rb_funcall( rbDocument, rb_intern("blank"), 1, Qnil );
-			VALUE first = rb_funcall( rbDocument, rb_intern("resource"), 1, rb_str_new2(RDF_FIRST) );
+			$node = rb_funcall( rbDocument, symBlank, 1, Qnil );
+			VALUE first = rb_funcall( rbDocument, symResource, 1, rb_str_new2(RDF_FIRST) );
 			VALUE argv[] = { $node, first, $object.node };
-			VALUE statement = rb_class_new_instance( 3, argv, rb_path2class("Wongi::RDF::Statement") );
-			rb_funcall( rbDocument, rb_intern("<<"), 1, statement );
+			VALUE statement = rb_class_new_instance( 3, argv, cStatement );
+			rb_funcall( rbDocument, symLSHIFT, 1, statement );
 		}
 		subseq=collection[collector]
 		{
-			VALUE rest = rb_funcall( rbDocument, rb_intern("resource"), 1, rb_str_new2(RDF_REST) );
+			VALUE rest = rb_funcall( rbDocument, symResource, 1, rb_str_new2(RDF_REST) );
 			VALUE argv[] = { $node, rest, $subseq.node };
-			VALUE statement = rb_class_new_instance( 3, argv, rb_path2class("Wongi::RDF::Statement") );
-			rb_funcall( rbDocument, rb_intern("<<"), 1, statement );
+			VALUE statement = rb_class_new_instance( 3, argv, cStatement );
+			rb_funcall( rbDocument, symLSHIFT, 1, statement );
 		}
 	;
 
@@ -202,18 +202,18 @@ uri[VALUE collector] returns [VALUE ruby_uri]
 	{
 		pANTLR3_STRING str = $URI.text /*$URI.text->toUTF8($URI.text)*/ ;
 		VALUE rb_strUri = rb_str_new2( str->chars );
-		$ruby_uri = rb_funcall( rb_path2class("URI"), rb_intern("parse"), 1, rb_funcall( rb_path2class("URI"), rb_intern("escape"), 1, rb_strUri ) );
+		$ruby_uri = rb_funcall( cURI, symParse, 1, rb_funcall( cURI, symEscape, 1, rb_strUri ) );
 
-		if( ! rb_funcall($ruby_uri, rb_intern("absolute?"), 0) ) {
+		if( ! rb_funcall($ruby_uri, symAbsoluteQ, 0) ) {
 			//  relative uri encountered
 			//  document must have a base
 			VALUE rbDocument = COLLECTOR_DOCUMENT;
-			VALUE rbBase = rb_funcall(rbDocument, rb_intern("base"), 0 );
+			VALUE rbBase = rb_funcall(rbDocument, symBase, 0 );
 			if( rbBase == Qnil ) {
 				rb_raise( rb_eException, "Relative URI with no base" );
 			}
 			else {
-				$ruby_uri = rb_funcall( rbBase, rb_intern("+"), 1, $ruby_uri );
+				$ruby_uri = rb_funcall( rbBase, symPLUS, 1, $ruby_uri );
 			}
 
 		}
