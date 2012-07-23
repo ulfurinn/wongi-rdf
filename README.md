@@ -1,6 +1,6 @@
 # Wongi::RDF
 
-TODO: Write a gem description
+Parses and serialises [Turtle](http://en.wikipedia.org/wiki/Turtle_%28syntax%29) documents.
 
 ## Installation
 
@@ -15,6 +15,30 @@ And then execute:
 Or install it yourself as:
 
     $ gem install wongi-rdf
+
+Building the gem requires the [ANTLR 3.4 C runtime](http://www.antlr.org/download/C). Some Linux distributions, such as Ubuntu and its derivatives, only provide older versions that are not compatible.
+
+## Usage
+
+### Parsing a document
+
+```ruby
+parser = Wongi::RDF::Parser.new
+document1 = parser.parse_file file_name
+document2 = parser.parse_string document_string
+```
+
+### Creating a document by hand
+
+
+
+### Serialising
+
+```ruby
+s = Wongi::RDF::Serializer.new document
+document_string = s.serialize
+s.serialize_to io
+```end
 
 ## Contributing
 
