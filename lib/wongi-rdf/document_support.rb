@@ -22,6 +22,9 @@ module Wongi
         @base = b
       end
 
+      # Attempts to create a resource from anything URI-like.
+      # @param [Node, URI::Generic, String, #to_uri] uri
+      # @raise if the argument cannot be interpreted as a URI
       def resource uri
         if uri.kind_of?( Wongi::RDF::Node )
           return uri.import( self )
@@ -43,6 +46,10 @@ module Wongi
         Resource.new real_uri, self
       end
 
+      # Attempts to create a Resource from a QName.
+      # The namespace must be known to the document.
+      # @param [String] qname the string to expand
+      # @return [Resource, NilClass] the created Resource
       def expand qname
         if parsed = Resource.parse_qname( qname )
           Resource.new( expand_split( *parsed ), self )
@@ -79,16 +86,18 @@ module Wongi
         namespaces[prefix]
       end
 
+      # Constructs a statement.
       def statement s, p, o
         Statement.new s, p, o, self
       end
 
+      # Constructs a statement and adds it to the graph.
       def statement! s, p, o
         self << Statement.new( s, p, o, self )
       end
 
       def has_blank? id
-        @used_blanks[id]
+        @used_blanks.has_key? id
       end
 
       private

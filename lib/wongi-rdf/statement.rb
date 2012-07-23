@@ -1,5 +1,7 @@
 module Wongi
   module RDF
+
+    # A single fact.
     class Statement < Struct.new( :subject, :predicate, :object )
 
       attr_reader :document
